@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<odoo>
+    <!-- form view -->
+    <record id="import_product_form_view" model="ir.ui.view">
+            <field name="name">import.product.form.view</field>
+            <field name="model">import.product</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="import_uom" type="object" string="Import Unit of Measures" />
+                        <button name="import_prod_categ" type="object" string="Import Products Category" />
+                        <button name="import_prod" type="object" string="Import Products" />                        
+                    </header>
+                    
+                </form>
+            </field>
+    </record>
+    
+    <!-- tree view -->
+    <record id="import_product_tree_view" model="ir.ui.view">
+        <field name="name">import.product.tree.view</field>
+        <field name="model">import.product</field>
+        <field name="arch" type="xml">
+            <tree  string="Import Util" default_order='id desc'>
+                <field name="model" />
+                <field name="item_id" />
+                <field name="action_date" />
+            </tree>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record id="util_menu_action" model="ir.actions.act_window">
+        <field name="name">Import Product</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">import.product</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_type">form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to import product. 
+            </p>
+        </field>
+    </record>
+
+
+    <!-- Menus  -->
+    <menuitem action="util_menu_action" id="util_menu" parent="base.menu_custom" sequence="12" />
+</odoo>
