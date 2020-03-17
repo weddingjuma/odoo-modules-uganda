@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
+from odoo.tools.config import config
 import xmlrpclib
 import csv
 from datetime import datetime, timedelta
@@ -20,9 +21,9 @@ class util(models.Model):
 
     def import_prod_categ(self):
         url = self.env['ir.config_parameter'].get_param('web.base.url')
-        username = "admin"
-        pwd = 'admin'
-        dbname = "uganda"
+        username = config.get("app_user")
+        pwd = config.get("app_pwd")
+        dbname = config.get("app_db")
         sock_common = xmlrpclib.ServerProxy(url+"/xmlrpc/common")
         uid = sock_common.login(dbname, username, pwd)
         sock = xmlrpclib.ServerProxy(url+"/xmlrpc/object")
@@ -47,9 +48,9 @@ class util(models.Model):
 
     def import_uom(self):
         url = self.env['ir.config_parameter'].get_param('web.base.url')
-        username = "admin"
-        pwd = 'admin'
-        dbname = "uganda"
+        username = config.get("app_user")
+        pwd = config.get("app_pwd")
+        dbname = config.get("app_db")
         sock_common = xmlrpclib.ServerProxy(url+"/xmlrpc/common")
         uid = sock_common.login(dbname, username, pwd)
         sock = xmlrpclib.ServerProxy(url+"/xmlrpc/object")
@@ -75,9 +76,9 @@ class util(models.Model):
 
     def import_prod(self):
         url = self.env['ir.config_parameter'].get_param('web.base.url')
-        username = "admin"
-        pwd = 'admin'
-        dbname = "uganda"
+        username = config.get("app_user")
+        pwd = config.get("app_pwd")
+        dbname = config.get("app_db")
         sock_common = xmlrpclib.ServerProxy(url+"/xmlrpc/common")
         uid = sock_common.login(dbname, username, pwd)
         sock = xmlrpclib.ServerProxy(url+"/xmlrpc/object")
