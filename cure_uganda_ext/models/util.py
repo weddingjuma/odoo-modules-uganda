@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 from odoo.tools.config import config
 import xmlrpclib
+import os
 import csv
 from datetime import datetime, timedelta
 
@@ -18,17 +19,18 @@ class util(models.Model):
         'Action Date', readonly=1, index=True, copy=False)
     item_id = fields.Char("Item ID")
     model = fields.Char('Model')
+    
 
     def import_prod_categ(self):
-        url = self.env['ir.config_parameter'].get_param('web.base.url')
         username = config.get("app_user")
         pwd = config.get("app_pwd")
         dbname = config.get("app_db")
+        file_import_path = os.path.dirname(os.path.abspath(__file__))
+        url = self.env['ir.config_parameter'].get_param('web.base.url')
         sock_common = xmlrpclib.ServerProxy(url+"/xmlrpc/common")
         uid = sock_common.login(dbname, username, pwd)
         sock = xmlrpclib.ServerProxy(url+"/xmlrpc/object")
-        reader = csv.reader(open(
-            '/vagrant/odoo-modules-uganda/product_category.csv', 'rb'), delimiter='|', quotechar='"')
+        reader = csv.reader(open(file_import_path+'/../import/product_category.csv', 'rb'), delimiter='|', quotechar='"')
         for row in reader:
             categ = self.env['product.category'].search(
                 [('name', '=', row[0].strip())])
@@ -47,15 +49,15 @@ class util(models.Model):
         return {}
 
     def import_uom(self):
-        url = self.env['ir.config_parameter'].get_param('web.base.url')
         username = config.get("app_user")
         pwd = config.get("app_pwd")
         dbname = config.get("app_db")
+        file_import_path = os.path.dirname(os.path.abspath(__file__))
+        url = self.env['ir.config_parameter'].get_param('web.base.url')
         sock_common = xmlrpclib.ServerProxy(url+"/xmlrpc/common")
         uid = sock_common.login(dbname, username, pwd)
         sock = xmlrpclib.ServerProxy(url+"/xmlrpc/object")
-        reader = csv.reader(open(
-            '/vagrant/odoo-modules-uganda/product_uom.csv', 'rb'), delimiter='|', quotechar='"')
+        reader = csv.reader(open(file_import_path+'/../import/product_uom.csv', 'rb'), delimiter='|', quotechar='"')
         for row in reader:
             uom = self.env['product.uom'].search(
                 [('name', '=', row[0].strip())])
@@ -75,15 +77,15 @@ class util(models.Model):
         return {}
 
     def import_prod(self):
-        url = self.env['ir.config_parameter'].get_param('web.base.url')
         username = config.get("app_user")
         pwd = config.get("app_pwd")
         dbname = config.get("app_db")
+        file_import_path = os.path.dirname(os.path.abspath(__file__))
+        url = self.env['ir.config_parameter'].get_param('web.base.url')
         sock_common = xmlrpclib.ServerProxy(url+"/xmlrpc/common")
         uid = sock_common.login(dbname, username, pwd)
         sock = xmlrpclib.ServerProxy(url+"/xmlrpc/object")
-        reader = csv.reader(open(
-            '/vagrant/odoo-modules-uganda/product_template.csv', 'rb'), delimiter=',', quotechar='"')
+        reader = csv.reader(open(file_import_path+'/../import/product_template.csv', 'rb'), delimiter=',', quotechar='"')
 
         for row in reader:
             uom = self.env['product.uom'].search(
