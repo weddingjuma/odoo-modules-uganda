@@ -133,3 +133,44 @@ class util(models.Model):
                     _logger.error(
                         "====="+row[0].split('-', 1)[1].strip() + " UoM not found: "+str(row[1]))
         return {}
+
+    def import_vendors(self):
+        username = config.get("app_user")
+        pwd = config.get("app_pwd")
+        dbname = config.get("app_db")
+        file_import_path = os.path.dirname(os.path.abspath(__file__))
+        url = self.env['ir.config_parameter'].get_param('web.base.url')
+        sock_common = xmlrpclib.ServerProxy(url+"/xmlrpc/common")
+        uid = sock_common.login(dbname, username, pwd)
+        sock = xmlrpclib.ServerProxy(url+"/xmlrpc/object")
+        reader = csv.reader(open(file_import_path+'/../import/res_partner.csv', 'rb'), delimiter=',', quotechar='"')
+        for row in reader:
+            country = self.env['res.country'].search([('name', '=', row[6].strip())]) #country column
+            country_state = self.env['res.country.state'].search([('name', '=', row[5].strip())]) #state column
+            partner = self.env['res.partner'].search([('name','=',row[0].strip())]) #vendor name column
+            if country:
+                if partner:
+                    _logger.error(row[0]+" Already exist")
+                else:
+                    res_partner = {
+                        'company_type':'company',
+                        'supplier': True,
+                        'name': row[0].strip() if row[0].strip() else '',
+                        'street': row[2].strip() if row[2].strip() else '',
+                        'city': row[3].strip() if row[3].strip() else '',
+                        'zip': row[4].strip() if row[4].strip() else '',
+                        'country_id':country.id,
+                        'phone': row[7].strip() if row[7].strip() else (row[8].strip() if row[8].strip() else ''),
+                        'mobile': row[8].strip() if row[8].strip() else ''
+                    }
+                    if row[1]:
+                        res_partner['ref'] = row[1].strip()
+                    if country_state :
+                        res_partner['state_id'] = country_state.id
+
+                    template_id = sock.execute(dbname, uid, pwd, 'res.partner', 'create', res_partner)
+                    self.create({'model': 'res.partner', 'item_id': template_id,'action_date': fields.Date.context_today(self)})
+            else:
+              _logger.error(row[0]+" Country not found! ")
+
+        return {}
