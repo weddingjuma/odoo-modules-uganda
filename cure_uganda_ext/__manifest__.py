@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','stock'],
+    'depends': ['base','stock','purchase','stock_no_negative','purchase_open_qty','purchase_order_approved','purchase_request','purchase_request_department','purchase_request_to_rfq','purchase_request_to_rfq_order_approved'],
 
     # always loaded
     'data': [
