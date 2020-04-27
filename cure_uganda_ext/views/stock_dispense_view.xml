@@ -1,0 +1,105 @@
+<odoo>
+    
+    <!-- form view -->
+    <record id="stock_dispense_form_view" model="ir.ui.view">
+        <field name="name">stock.dispense.form.view</field>
+        <field name="model">stock.dispense</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="button_confirm" type="object" states="draft" string="Confirm" id="draft_confirm" />
+                    <button name="button_confirm" type="object" states="sent" string="Confirm" class="oe_highlight" id="bid_confirm"/>
+                    <button name="button_draft" states="cancel" string="Set to Draft" type="object" />
+                    <button name="button_cancel" states="hod,draft" string="Cancel" type="object" />
+                    <button name="hod_approval" type="object" string="HOD Approval" states="hod" groups="cure_uganda_ext.hod_id" />
+                    <field name="state" widget="statusbar" statusbar_visible="hod,draft,approved" readonly="1" />
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h2>
+                            <field name="name" readonly="1" />
+                        </h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="ir_dept_id" attrs="{'readonly':[('state','in',['hod','approved'])]}"/>
+                            <field name="ir_dept_head_id" />
+                        </group>
+                        <group>
+                            <field name="ir_dispensed_date" attrs="{'readonly':[('state','in',['hod','approved'])]}"/>
+                            <field name="is_patient"/>
+                            <field name="patient_id" attrs="{'readonly':[('state','in',['hod','approved'])],'invisible': [('is_patient', '=', False)]}"/>
+                            <field name="is_department"/>
+                            <field name="disp_department" attrs="{'readonly':[('state','in',['hod','approved'])],'invisible': [('is_department', '=', False)]}"/>
+
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="items" string="Items">
+                            <field name="item_ids" widget="one2many_list" attrs="{'readonly':[('state','in',['hod','approved'])]}">
+                                <tree editable="bottom">
+                                    <field name="item_id" domain="[('type', '!=', 'service')]"/>
+                                    <field name="dispensed_qty" type="char"/>
+                                    <field name="available_qty" type="char"/>
+                                    <field name="comment" />
+                                </tree>
+                            </field>
+                            <div class="oe_clear" />
+                        </page>
+                        
+                    </notebook>
+                    <notebook>
+                        <page name="internal_notes" string="Internal Notes">
+                            <field name="notes" placeholder="Internal Notes..." attrs="{'readonly':[('state','in',['draft','cancel'])]}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="message_ids" widget="mail_thread" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+     <!-- tree view -->
+     <record id="stock_dispense_tree_view" model="ir.ui.view">
+        <field name="name">stock.dispense.tree.view</field>
+        <field name="model">stock.dispense</field>
+        <field name="arch" type="xml">
+            <tree decoration-bf="message_unread==True" decoration-muted="state=='cancel'" string="Stock Dispensing" default_order='id desc'>
+                <field name="message_unread" invisible="1" />
+                <field name="name" />
+                <field name="ir_dept_id" />
+                <field name="ir_dept_head_id" />
+                <field name="ir_dispensed_date" />
+                <field name="state" />
+            </tree>
+        </field>
+    </record>
+
+     <!-- Actions -->
+     <record id="dispense_stock_action" model="ir.actions.act_window">
+        <field name="name">Stock Dispensing</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">stock.dispense</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_type">form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to record new dispensed items. 
+            </p>
+        </field>
+    </record>
+    <record id="stock_balance_byloc_action" model="ir.actions.server">
+        <field name="name">Stock Balance</field>
+        <field name="model_id" ref="model_stock_dispense"/>
+        <field name="state">code</field>
+        <field name="code">action = env['stock.dispense'].browse(context.get('active_id')).group_by_location()</field>
+        <field eval="True" name="condition"/>
+    </record>
+
+    <!-- Menus  -->
+    <menuitem action="dispense_stock_action" id="menu_dispense_stock_action" parent="purchase.menu_procurement_management" sequence="11" />
+    <menuitem action="stock_balance_byloc_action" id="menu_stock_valuation_byloc_action" parent="purchase.menu_procurement_management" groups="cure_uganda_ext.hod_id" sequence="13" />
+</odoo>

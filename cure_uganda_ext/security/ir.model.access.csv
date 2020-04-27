@@ -1,1 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_import_product,access_import_product,model_import_product,base.group_user,1,1,1,1
+access_purchase_division,access_purchase_division,model_purchase_division,base.group_user,1,1,1,1
+access_purchase_department,access_purchase_department,model_purchase_department,base.group_user,1,1,1,1
+access_stock_dispense,access_stock_dispense,model_stock_dispense,base.group_user,1,1,1,1
+access_stock_dispense_item,access_stock_dispense_item,model_stock_dispense_item,base.group_user,1,1,1,1
